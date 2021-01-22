@@ -1,0 +1,82 @@
+---
+title: "Start"
+date: "22.01.2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      options(scipen = 999))
+```
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(lubridate)
+library(gt)
+library(janitor)
+```
+
+
+```{r}
+Primo_Stat_Auswertungen <- read_excel("T:/Statistik/ALMA_ART/Primo_Stat_Auswertungen.xlsx", 
+    sheet = "Tabelle3", col_types = c("date", 
+        "text", "numeric"))
+```
+
+```{r}
+Primo <- Primo_Stat_Auswertungen %>%
+  mutate(Year = year(Date))%>%
+  group_by(Year, Action) %>%
+  summarise(Value = sum(Value))
+```
+
+```{r}
+ggplot(Primo, aes(x=Year, y = Value))+
+  geom_col(aes(fill = Action), position = "dodge")+
+  theme_classic()+
+  labs(title = "Primo", subtitle = "Anzahl Suchen von 2018 bis 2020", fill = "Suchen", y = "", x = "Jahre")
+
+#+
+ # facet_wrap(~Date)
+  
+```
+
+```{r}
+Primo_2 <- Primo %>%
+spread(key = Year, value = Value) %>%
+  adorn_totals("row")
+```
+
+
+```{r}
+gt(Primo_2)
+```
+
+
+
+
+
+```{r}
+Website <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx", 
+    sheet = "Besuche", col_types = c("numeric", 
+        "text", "numeric"))
+```
+
+
+```{r}
+ggplot(Website, aes(x=Date, y = Value))+
+  geom_col(aes(fill = Action), position = "dodge")+
+  theme_classic()+
+  labs(title = "Website", subtitle = "Anzahl Besuche und Seitenansichten von 2018 bis 2020", fill = "Besuche", y = "", x = "")
+```
+```{r}
+Website_2 <- Website %>%
+spread(key = Date, value = Value)
+```
+
+```{r}
+gt(Website_2)
+```

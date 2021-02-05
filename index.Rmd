@@ -1,30 +1,85 @@
 ---
-title: "Start"
-date: "22.01.2021"
-output: html_document
+title: "Nutzungsstatistiken"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    source_code: embed
 ---
 
-## Testtest
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       warning = FALSE,
                       options(scipen = 999))
-```
 
-```{r}
+library(flexdashboard)
 library(readxl)
 library(tidyverse)
 library(lubridate)
 library(gt)
 library(janitor)
+library(scales)
+library(DT)
+library(plotly)
+
+# Ressources:
+# https://towardsdatascience.com/building-an-hr-dashboard-in-r-using-flexdashboard-76d14ed3f32
+# https://rmarkdown.rstudio.com/flexdashboard/using.html
+
+```
+
+Dash 2020 {data-icon="fa-globe"}
+===================================== 
+
+Row {data-width=150, data-height=200}
+-----------------------------------------------------------------------
+
+### Suchen in Primo </br>(im Vergleich zum Vorjahr)
+
+```{r}
+articles <- "+16 %"
+valueBox(articles, icon = "fa-search-plus", color = "green", href="#primo")
+```
+
+### Besuche der Website </br>(im Vergleich zum Vorjahr)
+
+```{r}
+comments <- "+28 %"
+valueBox(comments, icon = "fa-user-check", color = "green", href="#website")
+```
+
+### Ausleihe von Büchern </br>(im Vergleich zum Vorjahr)
+
+```{r}
+spam <- "-35 %"
+valueBox(spam, 
+         icon = "fa-book",
+         color = "red")
+```
+
+```{r eval=FALSE}
+### 
+#Die Zahl bezieht sich auf die prozentuale Veränderung zum Vorjahr 2019.
 ```
 
 
+Row 
+-----------------------------------------------------------------------
+
+
+Primo {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=400}
+-----------------------------------------------------------------------
+
+### Primo A
+
 ```{r}
 Primo_Stat_Auswertungen <- read_excel("T:/Statistik/ALMA_ART/Primo_Stat_Auswertungen.xlsx", 
-    sheet = "Tabelle3", col_types = c("date", 
+    sheet = "R_1", col_types = c("date", 
         "text", "numeric"))
 ```
 
@@ -36,15 +91,37 @@ Primo <- Primo_Stat_Auswertungen %>%
 ```
 
 ```{r}
-ggplot(Primo, aes(x=Year, y = Value))+
-  geom_col(aes(fill = Action), position = "dodge")+
-  theme_classic()+
-  labs(title = "Primo", subtitle = "Anzahl Suchen von 2018 bis 2020", fill = "Suchen", y = "", x = "Jahre")
+Primo_3 <- Primo %>%
+  summarise(Search_Total = sum(Value)) %>%
+  mutate(Percent_Change = (Search_Total/(lag(Search_Total))-1))
+```
+
+
+```{r}
+ggplot(Primo, aes(x = Year, y = Value)) +
+  geom_col(aes(fill = Action), position = "dodge") +
+  theme_classic() +
+  labs(
+    title = "Primo",
+    subtitle = "Anzahl Suchen von 2018 bis 2020",
+    fill = "Suchen",
+    y = "",
+    x = "Jahre"
+  ) +
+  theme(legend.position = "bottom")
 
 #+
  # facet_wrap(~Date)
   
 ```
+
+
+
+Column {data-width=200, data-height=200}  
+-----------------------------------------------------------------------
+
+### Primo B
+
 
 ```{r}
 Primo_2 <- Primo %>%
@@ -54,31 +131,114 @@ spread(key = Year, value = Value) %>%
 
 
 ```{r}
-gt(Primo_2)
+gt(Primo_3) %>%
+  tab_header(
+    title = md("Suchen in Primo"))
 ```
 
 
 
+Website {data-orientation=columns}
+===================================== 
 
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### Chart A
 
 ```{r}
-Website <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx", 
+Website_Besuche <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx", 
     sheet = "Besuche", col_types = c("numeric", 
         "text", "numeric"))
 ```
 
+```{r}
+Website_Besuche_2 <- Website_Besuche %>%
+  group_by(Action) %>%
+#  filter(Action == "Besuche") %>%
+  mutate(Percent_Change = (Value/(lag(Value))-1))
+```
+
 
 ```{r}
-ggplot(Website, aes(x=Date, y = Value))+
+p1 <- ggplot(Website_Besuche, aes(x=Date, y = Value))+
   geom_col(aes(fill = Action), position = "dodge")+
   theme_classic()+
-  labs(title = "Website", subtitle = "Anzahl Besuche und Seitenansichten von 2018 bis 2020", fill = "Besuche", y = "", x = "")
+  labs(title = "Besuche und Seitenansichten 2018 bis 2020", fill = "", y = "", x = "")
+
+ggplotly(p1)
 ```
+
+### Chart B
+
 ```{r}
-Website_2 <- Website %>%
-spread(key = Date, value = Value)
+Website_OS <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx", 
+    sheet = "Desktop", col_types = c("text", "text", "numeric"))
+```
+
+
+```{r}
+p1 <- Website_OS %>%
+  filter(date == "2020") %>%
+  plot_ly() %>% 
+  add_pie(labels=Website_OS$action, values = Website_OS$value, hole = 0.6) %>%
+  layout(title="Verwendung Betriebssyteme 2020")
+p1
+```
+
+
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+
+### Chart C
+
+```{r}
+Website_Users <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx", 
+    sheet = "Users", col_types = c("date", "numeric", "numeric"))
 ```
 
 ```{r}
-gt(Website_2)
+Website_Users_2 <- Website_Users %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+
+p2 <- ggplot(Website_Users_2, aes(x = month, y = visits, color = year))+
+  geom_point(size=2)+
+  geom_line(aes(x = month, y = visits, group = year), size = 1)+
+  theme(axis.text.x = element_text(angle = 90))+
+#  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Besuche 2018 bis 2020", y = "Besuche", x = "", color = "")
+
+ggplotly(p2)
 ```
+
+### Chart D
+
+
+
+
+```{r}
+Website_Users_2 <- Website_Users %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date))) 
+#%>%
+#  filter(date >= "2019-01-01")
+
+p1 <- ggplot(Website_Users_2, aes(x = month, y = unique_users, color = year))+
+  geom_point(size=2)+
+  geom_line(aes(x = month, y = unique_users, group = year), size = 1)+
+  theme(axis.text.x = element_text(angle = 90))+
+#  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Unique Users 2019 und 2020", y = "Unique Users", x = "", color = "")
+
+ggplotly(p1)
+```
+
+
+

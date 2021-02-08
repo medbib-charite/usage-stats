@@ -5,19 +5,11 @@ output:
     orientation: rows
     vertical_layout: fill
     source_code: embed
-    self_contained: false 
+ #   self_contained: false 
     # https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
 ---
 
-<style>                     
-.navbar {
-  background-color:#36AFAEFF;
-  border-color:#36AFAEFF;
-}
-.navbar-brand {
-color:black!important;
-}
-</style>  
+ 
 
 
 ```{r setup, include=FALSE}

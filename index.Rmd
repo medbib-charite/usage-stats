@@ -77,6 +77,30 @@ valueBox(spam,
 ```
 
 
+Row {data-width=150, data-height=200}
+-----------------------------------------------------------------------
+
+### Download aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)
+
+```{r}
+articles <- "+13 %"
+valueBox(articles,
+         icon = "fa-search-plus",
+         color = "#36AFAEFF",
+         href = "#primo")
+```
+
+### Download aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)
+
+```{r}
+articles <- "+25 %"
+valueBox(articles,
+         icon = "fa-search-plus",
+         color = "#36AFAEFF",
+         href = "#primo")
+```
+
+
 Row 
 -----------------------------------------------------------------------
 
@@ -116,17 +140,19 @@ Primo_3 <- Primo %>%
 ```{r}
 pal <- got(2, option = "Jon_Snow", direction = 1)
 
-ggplot(Primo, aes(x = Year, y = Value)) +
+p1 <- ggplot(Primo, aes(x = Year, y = Value)) +
   geom_col(aes(fill = Action), position = "dodge") +
   theme_classic() +
   labs(
-    title = "Primo",
-    subtitle = "Anzahl Suchen von 2018 bis 2020",
+    title = "Primo: Anzahl Suchen von 2018 bis 2020",
+    subtitle = "",
     fill = "Suchen",
     y = "",
-    x = "Jahre"
+    x = ""
   ) +
   scale_fill_manual(values = pal)
+
+ggplotly(p1)
 
 #+
  # facet_wrap(~Date)
@@ -187,7 +213,7 @@ p1 <- ggplot(Website_Besuche, aes(x = Date, y = Value)) +
   geom_col(aes(fill = Action), position = "dodge") +
   theme_classic() +
   scale_fill_manual(values = pal) +
-  labs(title = "Besuche und Seitenansichten 2018 bis 2020",
+  labs(title = "Website: Besuche und Seitenansichten 2018 bis 2020",
        fill = "",
        y = "",
        x = "")
@@ -215,7 +241,7 @@ p1 <- Website_OS %>%
   add_pie(labels = Website_OS$action,
           values = Website_OS$value,
           hole = 0.6) %>%
-  layout(title = "Verwendung Betriebssysteme 2020")
+  layout(title = "Website: Verwendung Betriebssysteme 2020")
 p1
 ```
 
@@ -252,7 +278,7 @@ p2 <-
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
   labs(
-    title = "Besuche 2018 bis 2020",
+    title = "Website: Besuche 2018 bis 2020",
     y = "Besuche",
     x = "",
     color = ""
@@ -284,7 +310,7 @@ p1 <-
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
   labs(
-    title = "Unique Users 2018 bis 2020",
+    title = "Website: Unique Users 2018 bis 2020",
     y = "Unique Users",
     x = "",
     color = ""
@@ -325,7 +351,7 @@ p1 <-
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(
-    title = "Ausleihen 2007 bis 2020",
+    title = "Ausleihen alle Standorte 2007 bis 2020",
     y = "Ausleihen",
     x = "",
     color = ""

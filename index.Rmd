@@ -7,10 +7,24 @@ output:
     source_code: embed
  #   self_contained: false 
     # https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
+editor_options: 
+  chunk_output_type: console
 ---
 
- 
+```{r eval = FALSE}
+# change color of navbar
 
+#<style>                     
+#.navbar {
+#  background-color:#36AFAEFF;
+#  border-color:#36AFAEFF;
+#}
+#.navbar-brand {
+#color:black!important;
+#}
+#</style> 
+```
+ 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
@@ -28,17 +42,34 @@ library(scales)
 #library(DT)
 library(plotly)
 library(gameofthrones)
+library(RColorBrewer)
 
 # Ressources:
 # https://towardsdatascience.com/building-an-hr-dashboard-in-r-using-flexdashboard-76d14ed3f32
 # https://rmarkdown.rstudio.com/flexdashboard/using.html
+# Icons:
+# https://fontawesome.com/
+
+# color
+# under -20%: #FA4659
+## under -10%: #F59474
+# around 0: #E3E3E3
+# over 10%: #A3DE83
+# over 20%: #2EB872
+
+# Jon Snow #36AFAEFF
+
+pal <- brewer.pal(n = 8, name = "RdYlGn")
+
+#pal <- got(9, option = "Tyrell", direction = -1)
+pal <- got(9, option = "Jon_Snow", direction = 1)
 
 ```
 
 Dash 2020 {data-icon="fa-globe"}
 ===================================== 
 
-Row {data-width=150, data-height=200}
+Row {data-height=300}
 -----------------------------------------------------------------------
 
 ### Suchen in Primo </br>(im Vergleich zum Vorjahr 2019)
@@ -47,27 +78,31 @@ Row {data-width=150, data-height=200}
 articles <- "+16 %"
 valueBox(articles,
          icon = "fa-search-plus",
-         color = "#36AFAEFF",
+         color = pal[7],
          href = "#primo")
 ```
 
-### Besuche der Website </br>(im Vergleich zum Vorjahr 2019)
+
+
+### Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)
 
 ```{r}
-comments <- "+28 %"
-valueBox(comments,
-         icon = "fa-user-check",
-         color = "#36AFAEFF",
-         href = "#website")
+articles <- "+31 %"
+valueBox(articles,
+         icon = "fa-book",
+         color = pal[9],
+         href = "#e-books")
 ```
 
-### Ausleihe von Büchern </br>(im Vergleich zum Vorjahr 2019)
+
+
+### Ausleihen von Büchern </br>(im Vergleich zum Vorjahr 2019)
 
 ```{r}
 spam <- "-50 %"
 valueBox(spam, 
          icon = "fa-book",
-         color = "#747374FF", 
+         color = pal[3], 
          href="#ausleihen")
 ```
 
@@ -77,32 +112,46 @@ valueBox(spam,
 ```
 
 
-Row {data-width=150, data-height=200}
+
+
+Row {data-height=300}
 -----------------------------------------------------------------------
 
-### Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)
+
+### Besuche der Website </br>(im Vergleich zum Vorjahr 2019)
 
 ```{r}
-articles <- "+13 %"
-valueBox(articles,
-         icon = "fa-search-plus",
-         color = "#36AFAEFF",
-         href = "#primo")
+comments <- "+28 %"
+valueBox(comments,
+         icon = "fa-user-check",
+         color = pal[8],
+         href = "#website")
 ```
 
 ### Downloads aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)
 
 ```{r}
-articles <- "+25 %"
+articles <- "+24 %"
 valueBox(articles,
-         icon = "fa-search-plus",
-         color = "#36AFAEFF",
-         href = "#primo")
+         icon = "fa-file",
+         color = pal[8],
+         href = "#journals")
 ```
 
 
-Row 
+### Personenzähler CVK </br>(im Vergleich zum Vorjahr 2019)
+
+```{r}
+spam <- "-59 %"
+valueBox(spam, 
+         icon = "fa-users",
+         color = pal[3], 
+         href="#personenzähler")
+```
+
+Row {data-height=300}
 -----------------------------------------------------------------------
+
 
 
 Primo {data-orientation=columns}
@@ -162,24 +211,21 @@ ggplotly(p1) %>%
 ```
 
 
-
-Column {data-width=200, data-height=200}  
------------------------------------------------------------------------
+```{r eval=FALSE}
+#Column {data-width=200, data-height=200}  
+#-----------------------------------------------------------------------
 
 ### Primo B
 
 
-```{r}
 Primo_2 <- Primo %>%
   spread(key = Year, value = Value) %>%
   adorn_totals("row")
-```
 
-
-```{r}
 gt(Primo_3) %>%
   tab_header(title = md("Suchen in Primo"))
 ```
+
 
 
 
@@ -287,6 +333,7 @@ p2 <-
   )
 
 ggplotly(p2)
+
 ```
 
 ### Chart D
@@ -323,6 +370,143 @@ ggplotly(p1)
 
 
 
+
+
+E-Books {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=400}
+-----------------------------------------------------------------------
+
+### Chart A
+
+
+```{r}
+Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_b1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
+```
+
+```{r}
+# http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44
+
+# https://stackoverflow.com/questions/13575180/how-to-change-language-settings-in-r
+#Sys.setenv(LANG = "en")
+# https://stackoverflow.com/questions/39340185/how-to-set-the-default-language-of-date-in-r
+#Sys.setlocale("LC_TIME", "German")
+
+```
+
+```{r}
+Springer <- Springer_2019_20 %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Title_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Springer, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  ylim(0, NA) +
+  labs(
+    title = "Springer E-Books Unique Title Requests 2019 und 2020 (TR_B1)",
+    y = "Unique Title Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+```{r eval=FALSE}
+Springer %>%
+  group_by(year) %>%
+  summarise(value = sum(value)) %>%
+  mutate(percent_change = (value / (lag(value)) - 1))
+```
+
+
+
+
+
+Journals {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=400}
+-----------------------------------------------------------------------
+
+### Chart A
+
+
+```{r}
+Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_j1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
+```
+
+```{r}
+# http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44
+
+# https://stackoverflow.com/questions/13575180/how-to-change-language-settings-in-r
+#Sys.setenv(LANG = "en")
+# https://stackoverflow.com/questions/39340185/how-to-set-the-default-language-of-date-in-r
+#Sys.setlocale("LC_TIME", "German")
+
+```
+
+```{r}
+Springer <- Springer_2019_20 %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Item_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Springer, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  ylim(0, NA) +
+  labs(
+    title = "Springer Journals Unique Item Requests 2019 und 2020 (TR_J1)",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+```{r eval=FALSE}
+Springer %>%
+  group_by(year) %>%
+  summarise(value = sum(value)) %>%
+  mutate(percent_change = (value / (lag(value)) - 1))
+```
+
+
 Ausleihen {data-orientation=columns}
 ===================================== 
 
@@ -353,7 +537,7 @@ p1 <-
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(
-    title = "Ausleihen alle Standorte 2007 bis 2020",
+    title = "Ausleihen (inkl. Verl.) alle Standorte 2007 bis 2020",
     y = "Ausleihen",
     x = "",
     color = ""
@@ -368,3 +552,52 @@ Ausleihen %>%
                              1))
 ```
 
+Personenzähler {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=400}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+Lesesaal <- read_excel(
+  "T:/Statistik/ALMA_ART/Lesesaal.xlsx",
+  sheet = "Tabelle1",
+  col_types = c("date",
+                "numeric"),
+  na = "NA"
+)
+
+Lesesaal_2 <- Lesesaal %>%
+  mutate(month = as.factor(month(Date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(Date)))
+
+pal <- got(3, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Lesesaal_2, aes(x = month, y = Value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = Value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  labs(
+    title = "Personenzähler CVK 2018 bis 2020",
+    y = "Personenzähler",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+
+```
+
+```{r eval=FALSE}
+Lesesaal_2 %>%
+  group_by(year) %>%
+  summarise(Value = sum(Value)) %>%
+  mutate(percent_change = (Value / (lag(Value)) - 1))
+```

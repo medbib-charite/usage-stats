@@ -80,7 +80,7 @@ valueBox(spam,
 Row {data-width=150, data-height=200}
 -----------------------------------------------------------------------
 
-### Download aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)
+### Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)
 
 ```{r}
 articles <- "+13 %"
@@ -90,7 +90,7 @@ valueBox(articles,
          href = "#primo")
 ```
 
-### Download aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)
+### Downloads aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)
 
 ```{r}
 articles <- "+25 %"
@@ -150,9 +150,11 @@ p1 <- ggplot(Primo, aes(x = Year, y = Value)) +
     y = "",
     x = ""
   ) +
-  scale_fill_manual(values = pal)
+  scale_fill_manual(values = pal) +
+  theme(legend.position = "bottom") 
 
-ggplotly(p1)
+ggplotly(p1) %>%
+  layout(legend = list(orientation = "h", y = -0.1))
 
 #+
  # facet_wrap(~Date)
@@ -216,7 +218,7 @@ p1 <- ggplot(Website_Besuche, aes(x = Date, y = Value)) +
   labs(title = "Website: Besuche und Seitenansichten 2018 bis 2020",
        fill = "",
        y = "",
-       x = "")
+       x = "") 
 
 ggplotly(p1)
 ```

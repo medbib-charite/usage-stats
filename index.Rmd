@@ -5,7 +5,19 @@ output:
     orientation: rows
     vertical_layout: fill
     source_code: embed
+    self_contained: false 
+    # https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
 ---
+
+<style>                     
+.navbar {
+  background-color:#36AFAEFF;
+  border-color:#36AFAEFF;
+}
+.navbar-brand {
+color:black!important;
+}
+</style>  
 
 
 ```{r setup, include=FALSE}
@@ -21,8 +33,9 @@ library(lubridate)
 library(gt)
 library(janitor)
 library(scales)
-library(DT)
+#library(DT)
 library(plotly)
+library(gameofthrones)
 
 # Ressources:
 # https://towardsdatascience.com/building-an-hr-dashboard-in-r-using-flexdashboard-76d14ed3f32
@@ -40,23 +53,24 @@ Row {data-width=150, data-height=200}
 
 ```{r}
 articles <- "+16 %"
-valueBox(articles, icon = "fa-search-plus", color = "green", href="#primo")
+valueBox(articles, icon = "fa-search-plus", color = "#36AFAEFF", href="#primo")
 ```
 
 ### Besuche der Website </br>(im Vergleich zum Vorjahr)
 
 ```{r}
 comments <- "+28 %"
-valueBox(comments, icon = "fa-user-check", color = "green", href="#website")
+valueBox(comments, icon = "fa-user-check", color = "#36AFAEFF", href="#website")
 ```
 
 ### Ausleihe von Büchern </br>(im Vergleich zum Vorjahr)
 
 ```{r}
-spam <- "-35 %"
+spam <- "-50 %"
 valueBox(spam, 
          icon = "fa-book",
-         color = "red")
+         color = "#747374FF", 
+         href="#ausleihen")
 ```
 
 ```{r eval=FALSE}
@@ -98,6 +112,8 @@ Primo_3 <- Primo %>%
 
 
 ```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
 ggplot(Primo, aes(x = Year, y = Value)) +
   geom_col(aes(fill = Action), position = "dodge") +
   theme_classic() +
@@ -108,7 +124,7 @@ ggplot(Primo, aes(x = Year, y = Value)) +
     y = "",
     x = "Jahre"
   ) +
-  theme(legend.position = "bottom")
+  scale_fill_manual(values = pal)
 
 #+
  # facet_wrap(~Date)
@@ -141,7 +157,7 @@ gt(Primo_3) %>%
 Website {data-orientation=columns}
 ===================================== 
 
-Column {data-width=400}
+Column
 -----------------------------------------------------------------------
 
 ### Chart A
@@ -161,9 +177,12 @@ Website_Besuche_2 <- Website_Besuche %>%
 
 
 ```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
 p1 <- ggplot(Website_Besuche, aes(x=Date, y = Value))+
   geom_col(aes(fill = Action), position = "dodge")+
   theme_classic()+
+  scale_fill_manual(values = pal)+
   labs(title = "Besuche und Seitenansichten 2018 bis 2020", fill = "", y = "", x = "")
 
 ggplotly(p1)
@@ -178,17 +197,19 @@ Website_OS <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx",
 
 
 ```{r}
+pal <- got(3, option = "Jon_Snow", direction = -1)
+
 p1 <- Website_OS %>%
   filter(date == "2020") %>%
-  plot_ly() %>% 
+  plot_ly( marker = list(colors = pal)) %>% 
   add_pie(labels=Website_OS$action, values = Website_OS$value, hole = 0.6) %>%
-  layout(title="Verwendung Betriebssyteme 2020")
+  layout(title="Verwendung Betriebssysteme 2020")
 p1
 ```
 
 
 
-Column {data-width=400}
+Column
 -----------------------------------------------------------------------
 
 
@@ -197,6 +218,8 @@ Column {data-width=400}
 ```{r}
 Website_Users <- read_excel("T:/Statistik/ALMA_ART/Website.xlsx", 
     sheet = "Users", col_types = c("date", "numeric", "numeric"))
+
+pal <- got(3, option = "Jon_Snow", direction = 1)
 ```
 
 ```{r}
@@ -211,6 +234,7 @@ p2 <- ggplot(Website_Users_2, aes(x = month, y = visits, color = year))+
 #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  scale_color_manual(values = pal)+
   labs(title = "Besuche 2018 bis 2020", y = "Besuche", x = "", color = "")
 
 ggplotly(p2)
@@ -228,6 +252,7 @@ Website_Users_2 <- Website_Users %>%
 #%>%
 #  filter(date >= "2019-01-01")
 
+
 p1 <- ggplot(Website_Users_2, aes(x = month, y = unique_users, color = year))+
   geom_point(size=2)+
   geom_line(aes(x = month, y = unique_users, group = year), size = 1)+
@@ -235,10 +260,51 @@ p1 <- ggplot(Website_Users_2, aes(x = month, y = unique_users, color = year))+
 #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  scale_color_manual(values = pal)+
   labs(title = "Unique Users 2018 bis 2020", y = "Unique Users", x = "", color = "")
 
 ggplotly(p1)
 ```
 
 
+
+Ausleihen {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=400}
+-----------------------------------------------------------------------
+
+### Ausleihen
+
+```{r}
+Ausleihen <- read_excel("T:/Statistik/ALMA_ART/Ausleihen.xlsx", 
+    sheet = "Ausleihen_R", col_types = c("text", 
+        "numeric", "numeric", "numeric", 
+        "numeric"), na = "NA")
+```
+
+```{r}
+pal <- got(12, option = "Jon_Snow", direction = -1)
+
+p1 <-
+  ggplot(Ausleihen, aes(x = Jahr, y = Ausleihen_u_Verl)) +
+  geom_col(fill = pal[1]) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Ausleihen 2007 bis 2020",
+    y = "Ausleihen",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+```{r}
+Ausleihen %>%
+  mutate(Percent_Change = (Ausleihen_u_Verl/(lag(Ausleihen_u_Verl))-1))
+```
 

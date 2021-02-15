@@ -157,7 +157,28 @@ valueBox(spam,
 Row {data-height=300}
 -----------------------------------------------------------------------
 
+###
 
+```{r}
+articles <- "+9 %"
+valueBox(articles,
+         caption = "Downloads aus E-Journals von LWW </br>(im Vergleich zum Vorjahr 2019)",
+         icon = "fa-file",
+         color = pal[15],
+         href = "#journals")
+```
+
+###
+
+```{r}
+
+```
+
+###
+
+```{r}
+
+```
 
 
 Primo {data-orientation=columns}
@@ -592,6 +613,13 @@ ggplotly(p1)
 
 ```{r eval=FALSE}
 Springer %>%
+  group_by(year) %>%
+  summarise(value = sum(value)) %>%
+  mutate(percent_change = (value / (lag(value)) - 1))
+```
+
+```{r eval=FALSE}
+LWW %>%
   group_by(year) %>%
   summarise(value = sum(value)) %>%
   mutate(percent_change = (value / (lag(value)) - 1))

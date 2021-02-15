@@ -6,23 +6,26 @@ output:
     vertical_layout: fill
     source_code: embed
  #   self_contained: false 
-    # https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
+# https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
 editor_options: 
   chunk_output_type: console
 ---
 
+<style>                     
+.navbar {
+  background-color:#36AFAE  ;
+  border-color:#36AFAE  ;
+}
+.navbar-brand {
+color:white!important;
+}
+</style> 
+
+
 ```{r eval = FALSE}
 # change color of navbar
 
-#<style>                     
-#.navbar {
-#  background-color:#36AFAEFF;
-#  border-color:#36AFAEFF;
-#}
-#.navbar-brand {
-#color:black!important;
-#}
-#</style> 
+
 ```
  
 
@@ -50,59 +53,59 @@ library(RColorBrewer)
 # Icons:
 # https://fontawesome.com/
 
-# color
-# under -20%: #FA4659
-## under -10%: #F59474
-# around 0: #E3E3E3
-# over 10%: #A3DE83
-# over 20%: #2EB872
+pal <- got(20, option = "Jon_Snow", direction = 1)
 
-# Jon Snow #36AFAEFF
+#library(stringr)
+pal <- str_sub(pal, end=-3)
 
-pal <- brewer.pal(n = 8, name = "RdYlGn")
-
+# Alternative Farbpaletten
+#pal <- brewer.pal(n = 9, name = "RdYlGn")
 #pal <- got(9, option = "Tyrell", direction = -1)
-pal <- got(9, option = "Jon_Snow", direction = 1)
+
+
 
 ```
 
-Dash 2020 {data-icon="fa-globe"}
+Dash {data-icon="fa-globe"}
 ===================================== 
 
 Row {data-height=300}
 -----------------------------------------------------------------------
 
-### Suchen in Primo </br>(im Vergleich zum Vorjahr 2019)
+###
 
 ```{r}
 articles <- "+16 %"
 valueBox(articles,
+         caption = "Suchen in Primo </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-search-plus",
-         color = pal[7],
+         color = pal[17],
          href = "#primo")
 ```
 
 
 
-### Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)
+###
 
 ```{r}
 articles <- "+31 %"
 valueBox(articles,
+         caption = "Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-book",
-         color = pal[9],
+         color = pal[20],
          href = "#e-books")
 ```
 
 
 
-### Ausleihen von Büchern </br>(im Vergleich zum Vorjahr 2019)
+###
 
 ```{r}
-spam <- "-50 %"
-valueBox(spam, 
+spam <- "-48 %"
+valueBox(spam,
+         caption = "Ausleihen von Büchern </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-book",
-         color = pal[3], 
+         color = pal[12], 
          href="#ausleihen")
 ```
 
@@ -117,40 +120,43 @@ valueBox(spam,
 Row {data-height=300}
 -----------------------------------------------------------------------
 
-
-### Besuche der Website </br>(im Vergleich zum Vorjahr 2019)
+###
 
 ```{r}
 comments <- "+28 %"
 valueBox(comments,
+         caption = "Besuche der Website </br>(im Vergleich zum Vorjahr 2020)",
          icon = "fa-user-check",
-         color = pal[8],
+         color = pal[19],
          href = "#website")
 ```
 
-### Downloads aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)
+###
 
 ```{r}
 articles <- "+24 %"
 valueBox(articles,
+         caption = "Downloads aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-file",
-         color = pal[8],
+         color = pal[18],
          href = "#journals")
 ```
 
 
-### Personenzähler CVK </br>(im Vergleich zum Vorjahr 2019)
+###
 
 ```{r}
 spam <- "-59 %"
-valueBox(spam, 
+valueBox(spam,
+         caption = "Personenzähler CVK </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-users",
-         color = pal[3], 
+         color = pal[11], 
          href="#personenzähler")
 ```
 
 Row {data-height=300}
 -----------------------------------------------------------------------
+
 
 
 
@@ -515,7 +521,7 @@ Column {data-width=400, data-height=400}
 
 ### Ausleihen
 
-```{r}
+```{r eval=FALSE}
 Ausleihen <- read_excel(
   "T:/Statistik/ALMA_ART/Ausleihen.xlsx",
   sheet = "Ausleihen_R",
@@ -526,7 +532,7 @@ Ausleihen <- read_excel(
 )
 ```
 
-```{r}
+```{r eval=FALSE}
 pal <- got(12, option = "Jon_Snow", direction = -1)
 
 p1 <-
@@ -546,11 +552,65 @@ p1 <-
 ggplotly(p1)
 ```
 
-```{r}
+```{r eval=FALSE}
 Ausleihen %>%
   mutate(Percent_Change = (Ausleihen_u_Verl / (lag(Ausleihen_u_Verl)) -
                              1))
 ```
+
+
+```{r}
+Ausleihen <- read_excel(
+  "T:/Statistik/ALMA_ART/Ausl_Verl.xlsx",
+  sheet = "Tabelle1",
+  col_types = c("text",
+                "text", "numeric", "numeric",
+                "numeric", "numeric"),
+  na = "NA"
+)
+```
+
+
+```{r}
+Ausleihen <- Ausleihen %>%
+  mutate(Ausl_Verl = Ausleihen + Verlängerungen) %>%
+  mutate(Monat = as.factor(month(Monat, label = T, abb = T)))
+```
+
+
+```{r}
+pal <- got(3, option = "Jon_Snow", direction = -1)
+
+p1 <-
+  ggplot(Ausleihen, aes(x = Monat, y = Ausl_Verl, color = Bibliothek)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = Monat, y = Ausl_Verl, group = Bibliothek), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  ylim(0, NA) +
+  labs(
+    title = "Ausleihen (inkl. Verl.) 2019 und 2020",
+    y = "",
+    x = "",
+    color = ""
+  ) +
+  facet_wrap(~Jahr)
+
+ggplotly(p1)
+```
+
+
+```{r eval=FALSE}
+Ausleihen %>%
+  group_by(Jahr) %>%
+  summarise(Ausl_Verl = sum(Ausl_Verl)) %>%
+  mutate(Percent_Change = (Ausl_Verl / (lag(Ausl_Verl)) -
+                             1))
+```
+
 
 Personenzähler {data-orientation=columns}
 ===================================== 

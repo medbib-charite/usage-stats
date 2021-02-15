@@ -391,6 +391,7 @@ Column {data-width=400, data-height=400}
 Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_b1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
 ```
 
+
 ```{r}
 # http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44
 
@@ -412,6 +413,7 @@ Springer <- Springer_2019_20 %>%
   mutate(month = as.factor(month(date, label = T, abb = T))) %>%
   mutate(year = as.factor(year(date)))
 ```
+
 
 ```{r}
 pal <- got(2, option = "Jon_Snow", direction = 1)
@@ -447,10 +449,10 @@ Springer %>%
 
 
 
-Journals {data-orientation=columns}
+Journals
 ===================================== 
 
-Column {data-width=400, data-height=400}
+Row
 -----------------------------------------------------------------------
 
 ### Chart A
@@ -458,6 +460,10 @@ Column {data-width=400, data-height=400}
 
 ```{r}
 Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_j1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
+```
+
+```{r}
+LWW_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/LWW/LWW_2019_2020_TR_J1.csv", header = T, skip = 13, sep = ",")
 ```
 
 ```{r}
@@ -477,6 +483,23 @@ Springer <- Springer_2019_20 %>%
   filter(Metric_Type == "Unique_Item_Requests") %>%
   select(-1) %>%
   gather() %>%
+  mutate(Publisher = "Springer") %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+
+```{r}
+LWW <- LWW_2019_20 %>%
+  group_by(Publisher, Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Item_Requests") %>%
+  filter(Publisher == "Lippincott Williams & Wilkins (LWW)") %>%
+  ungroup() %>%
+  select(-1, -2) %>%
+  gather() %>%
+  mutate(Publisher = "LWW") %>%
   mutate(date = my(key)) %>%
   mutate(month = as.factor(month(date, label = T, abb = T))) %>%
   mutate(year = as.factor(year(date)))
@@ -504,6 +527,68 @@ p1 <-
 
 ggplotly(p1)
 ```
+
+
+### Chart B
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(LWW, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  ylim(0, NA) +
+  labs(
+    title = "LWW Journals Unique Item Requests 2019 und 2020 (TR_J1)",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Chart C
+
+```{r}
+Journals <- bind_rows(Springer, LWW)
+```
+
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Journals, aes(x = month, y = value, color = Publisher)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = Publisher), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  ylim(0, NA) +
+  labs(
+    title = "Journals Unique Item Requests 2019 und 2020 (TR_J1)",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  ) +
+  facet_wrap(~year)
+
+ggplotly(p1)
+```
+
 
 ```{r eval=FALSE}
 Springer %>%
@@ -592,7 +677,7 @@ p1 <-
   scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
-    title = "Ausleihen (inkl. Verl.) 2019 und 2020",
+    title = "Ausleihen (inkl. Verl.) nach Standorten 2019 und 2020",
     y = "",
     x = "",
     color = ""

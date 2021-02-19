@@ -189,7 +189,7 @@ Primo {data-orientation=columns}
 Column {data-width=400, data-height=400}
 -----------------------------------------------------------------------
 
-### Primo A
+### Primo: Anzahl Suchen von 2018 bis 2020
 
 ```{r}
 Primo_Stat_Auswertungen <-
@@ -222,7 +222,7 @@ p1 <- ggplot(Primo, aes(x = Year, y = Value)) +
   geom_col(aes(fill = Action), position = "dodge") +
   theme_classic() +
   labs(
-    title = "Primo: Anzahl Suchen von 2018 bis 2020",
+    title = "",
     subtitle = "",
     fill = "Suchen",
     y = "",
@@ -259,7 +259,7 @@ Website {data-orientation=columns}
 Column
 -----------------------------------------------------------------------
 
-### Chart A
+### Website: Besuche und Seitenansichten 2018 bis 2020
 
 ```{r}
 Website_Besuche <- read_excel(
@@ -285,7 +285,7 @@ p1 <- ggplot(Website_Besuche, aes(x = Date, y = Value)) +
   geom_col(aes(fill = Action), position = "dodge") +
   theme_classic() +
   scale_fill_manual(values = pal) +
-  labs(title = "Website: Besuche und Seitenansichten 2018 bis 2020",
+  labs(title = "",
        fill = "",
        y = "",
        x = "") 
@@ -293,7 +293,7 @@ p1 <- ggplot(Website_Besuche, aes(x = Date, y = Value)) +
 ggplotly(p1)
 ```
 
-### Chart B
+### Website: Verwendung Betriebssysteme 2020
 
 ```{r}
 Website_OS <- read_excel(
@@ -313,7 +313,7 @@ p1 <- Website_OS %>%
   add_pie(labels = Website_OS$action,
           values = Website_OS$value,
           hole = 0.6) %>%
-  layout(title = "Website: Verwendung Betriebssysteme 2020")
+  layout(title = "")
 p1
 ```
 
@@ -323,7 +323,7 @@ Column
 -----------------------------------------------------------------------
 
 
-### Chart C
+### Website: Besuche 2018 bis 2020
 
 ```{r}
 Website_Users <- read_excel(
@@ -350,7 +350,7 @@ p2 <-
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
   labs(
-    title = "Website: Besuche 2018 bis 2020",
+    title = "",
     y = "Besuche",
     x = "",
     color = ""
@@ -360,7 +360,7 @@ ggplotly(p2)
 
 ```
 
-### Chart D
+### Website: Unique Users 2018 bis 2020
 
 
 
@@ -380,7 +380,7 @@ p1 <-
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
   labs(
-    title = "Website: Unique Users 2018 bis 2020",
+    title = "",
     y = "Unique Users",
     x = "",
     color = ""
@@ -399,7 +399,7 @@ E-Books {data-orientation=columns}
 Column {data-width=400, data-height=400}
 -----------------------------------------------------------------------
 
-### Chart A
+### Springer E-Books Unique Title Requests (TR_B1) 2019 und 2020
 
 
 ```{r}
@@ -434,7 +434,7 @@ p1 <-
   scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
-    title = "Springer E-Books Unique Title Requests 2019 und 2020 (TR_B1)",
+    title = "",
     y = "Unique Title Requests",
     x = "",
     color = ""
@@ -631,7 +631,7 @@ ggplotly(p1)
 
 Unique_Item_Requests: Es wird nur ein Zugriff gezählt, wenn beim Aufruf eines Artikels automatisch die HTML-Version geöffnet und anschließend das PDF des Artikels heruntergeladen wird.
 
-[Weitere Informationen](http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44) 
+[Weitere Informationen zu den Metriken von COUNTER 5](http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44) 
 
 
 ```{r eval=FALSE}
@@ -649,13 +649,22 @@ LWW %>%
 ```
 
 
+```{r}
+Journals %>%
+  group_by(year) %>%
+  summarise(value = sum(value)) %>%
+  mutate(percent_change = (value / (lag(value)) - 1))
+```
+
+
+
 Ausleihen {data-orientation=columns}
 ===================================== 
 
 Column {data-width=400, data-height=400}
 -----------------------------------------------------------------------
 
-### Ausleihen
+### Ausleihen (inkl. Verl.) nach Standorten 2019 und 2020
 
 ```{r eval=FALSE}
 Ausleihen <- read_excel(
@@ -729,7 +738,7 @@ p1 <-
   scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
-    title = "Ausleihen (inkl. Verl.) nach Standorten 2019 und 2020",
+    title = "",
     y = "",
     x = "",
     color = ""
@@ -755,7 +764,7 @@ Personenzähler {data-orientation=columns}
 Column {data-width=400, data-height=400}
 -----------------------------------------------------------------------
 
-### Chart A
+### Personenzähler CVK 2018 bis 2020
 
 ```{r}
 Lesesaal <- read_excel(
@@ -782,7 +791,7 @@ p1 <-
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
   labs(
-    title = "Personenzähler CVK 2018 bis 2020",
+    title = "",
     y = "Personenzähler",
     x = "",
     color = ""

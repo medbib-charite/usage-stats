@@ -7,8 +7,6 @@ output:
     orientation: rows
     vertical_layout: fill
     source_code: embed
- #   self_contained: false 
-# https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
 editor_options: 
   chunk_output_type: console
 ---
@@ -44,9 +42,6 @@ color:white!important;
 </style> 
 
 
-
- 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
@@ -64,24 +59,6 @@ library(scales)
 library(plotly)
 library(gameofthrones)
 library(RColorBrewer)
-
-# Ressources:
-# https://towardsdatascience.com/building-an-hr-dashboard-in-r-using-flexdashboard-76d14ed3f32
-# https://rmarkdown.rstudio.com/flexdashboard/using.html
-# Icons:
-# https://fontawesome.com/
-
-pal <- got(20, option = "Jon_Snow", direction = 1)
-
-#library(stringr)
-pal <- str_sub(pal, end=-3)
-
-# Alternative Farbpaletten
-#pal <- brewer.pal(n = 9, name = "RdYlGn")
-#pal <- got(9, option = "Tyrell", direction = -1)
-
-
-
 ```
 
 Dash {data-icon="fa-globe"}
@@ -90,11 +67,18 @@ Dash {data-icon="fa-globe"}
 Row {data-height=300}
 -----------------------------------------------------------------------
 
+```{r}
+# color pallettes for valueBoxes
+pal <- got(20, option = "Jon_Snow", direction = 1)
+pal <- str_sub(pal, end=-3)
+```
+
+
 ###
 
 ```{r}
-articles <- "+16 %"
-valueBox(articles,
+perc_change <- "+16 %"
+valueBox(perc_change,
          caption = "Suchen in Primo </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-search-plus",
          color = pal[17],
@@ -106,8 +90,8 @@ valueBox(articles,
 ###
 
 ```{r}
-articles <- "+31 %"
-valueBox(articles,
+perc_change <- "+31 %"
+valueBox(perc_change,
          caption = "Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-book",
          color = pal[20],
@@ -119,8 +103,8 @@ valueBox(articles,
 ###
 
 ```{r}
-spam <- "-48 %"
-valueBox(spam,
+perc_change <- "-48 %"
+valueBox(perc_change,
          caption = "Ausleihen von Büchern </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-book",
          color = pal[12], 
@@ -141,8 +125,8 @@ Row {data-height=300}
 ###
 
 ```{r}
-comments <- "+28 %"
-valueBox(comments,
+perc_change <- "+28 %"
+valueBox(perc_change,
          caption = "Besuche der Website </br>(im Vergleich zum Vorjahr 2020)",
          icon = "fa-user-check",
          color = pal[19],
@@ -152,8 +136,8 @@ valueBox(comments,
 ###
 
 ```{r}
-articles <- "+24 %"
-valueBox(articles,
+perc_change <- "+24 %"
+valueBox(perc_change,
          caption = "Downloads aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-file",
          color = pal[18],
@@ -164,8 +148,8 @@ valueBox(articles,
 ###
 
 ```{r}
-spam <- "-59 %"
-valueBox(spam,
+perc_change <- "-59 %"
+valueBox(perc_change,
          caption = "Personenzähler CVK </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-users",
          color = pal[12], 
@@ -178,8 +162,8 @@ Row {data-height=300}
 ###
 
 ```{r}
-articles <- "+9 %"
-valueBox(articles,
+perc_change <- "+9 %"
+valueBox(perc_change,
          caption = "Downloads aus E-Journals von LWW </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-file",
          color = pal[15],
@@ -249,10 +233,6 @@ p1 <- ggplot(Primo, aes(x = Year, y = Value)) +
 
 ggplotly(p1) %>%
   layout(legend = list(orientation = "h", y = -0.1))
-
-#+
- # facet_wrap(~Date)
-  
 ```
 
 
@@ -261,7 +241,6 @@ ggplotly(p1) %>%
 #-----------------------------------------------------------------------
 
 ### Primo B
-
 
 Primo_2 <- Primo %>%
   spread(key = Year, value = Value) %>%
@@ -390,9 +369,6 @@ ggplotly(p2)
 Website_Users_2 <- Website_Users %>%
   mutate(month = as.factor(month(date, label = T, abb = T))) %>%
   mutate(year = as.factor(year(date)))
-#%>%
-#  filter(date >= "2019-01-01")
-
 
 p1 <-
   ggplot(Website_Users_2, aes(x = month, y = unique_users, color = year)) +
@@ -430,16 +406,6 @@ Column {data-width=400, data-height=400}
 Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_b1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
 ```
 
-
-```{r}
-# http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44
-
-# https://stackoverflow.com/questions/13575180/how-to-change-language-settings-in-r
-#Sys.setenv(LANG = "en")
-# https://stackoverflow.com/questions/39340185/how-to-set-the-default-language-of-date-in-r
-#Sys.setlocale("LC_TIME", "German")
-
-```
 
 ```{r}
 Springer <- Springer_2019_20 %>%
@@ -494,25 +460,11 @@ Journals
 Row
 -----------------------------------------------------------------------
 
-### Chart A
+### Springer Journals Unique Item Requests (TR_J1) 2019 und 2020
 
 
 ```{r}
 Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_j1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
-```
-
-```{r}
-LWW_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/LWW/LWW_2019_2020_TR_J1.csv", header = T, skip = 13, sep = ",")
-```
-
-```{r}
-# http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44
-
-# https://stackoverflow.com/questions/13575180/how-to-change-language-settings-in-r
-#Sys.setenv(LANG = "en")
-# https://stackoverflow.com/questions/39340185/how-to-set-the-default-language-of-date-in-r
-#Sys.setlocale("LC_TIME", "German")
-
 ```
 
 ```{r}
@@ -528,6 +480,10 @@ Springer <- Springer_2019_20 %>%
   mutate(year = as.factor(year(date)))
 ```
 
+
+```{r}
+LWW_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/LWW/LWW_2019_2020_TR_J1.csv", header = T, skip = 13, sep = ",")
+```
 
 ```{r}
 LWW <- LWW_2019_20 %>%
@@ -558,7 +514,7 @@ p1 <-
   scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
-    title = "Springer Journals Unique Item Requests 2019 und 2020 (TR_J1)",
+    title = "",
     y = "Unique Item Requests",
     x = "",
     color = ""
@@ -568,7 +524,7 @@ ggplotly(p1)
 ```
 
 
-### Chart B
+### LWW Journals Unique Item Requests (TR_J1) 2019 und 2020
 
 ```{r}
 pal <- got(2, option = "Jon_Snow", direction = 1)
@@ -584,7 +540,7 @@ p1 <-
   scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
-    title = "LWW Journals Unique Item Requests 2019 und 2020 (TR_J1)",
+    title = "",
     y = "Unique Item Requests",
     x = "",
     color = ""
@@ -594,14 +550,55 @@ ggplotly(p1)
 ```
 
 
-Row
+Row {.tabset}
 -----------------------------------------------------------------------
 
-### Chart C
+### Journals Unique Item Requests (TR_J1) 2020 im Vergleich zum Vorjahr in Prozent
 
 ```{r}
 Journals <- bind_rows(Springer, LWW)
 ```
+
+
+
+```{r}
+Journals_Perc <- Journals %>%
+  group_by(Publisher, month) %>%
+  arrange(month, year) %>%
+  mutate(percent_change = (value / (lag(value)) - 1)) %>%
+  filter(year == 2020) %>%
+  select(-1,-2)
+```
+
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Journals_Perc, aes(x = month, y = percent_change, color = Publisher)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = percent_change, group = Publisher), size = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.8) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Veränderung in Prozent",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+
+
+### Journals Unique Item Requests (TR_J1) 2019 und 2020
+
 
 
 ```{r}
@@ -618,7 +615,7 @@ p1 <-
   scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
-    title = "Journals Unique Item Requests 2019 und 2020 (TR_J1)",
+    title = "",
     y = "Unique Item Requests",
     x = "",
     color = ""
@@ -627,6 +624,14 @@ p1 <-
 
 ggplotly(p1)
 ```
+
+
+### Definition Unique Item Requests (TR_J1)
+
+
+Unique_Item_Requests: Es wird nur ein Zugriff gezählt, wenn beim Aufruf eines Artikels automatisch die HTML-Version geöffnet und anschließend das PDF des Artikels heruntergeladen wird.
+
+[Weitere Informationen](http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44) 
 
 
 ```{r eval=FALSE}

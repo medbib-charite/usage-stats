@@ -5,7 +5,7 @@ title: "Nutzungsstatistiken 2020"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
-    vertical_layout: fill
+    vertical_layout: scroll
     source_code: embed
 editor_options: 
   chunk_output_type: console
@@ -66,7 +66,7 @@ library(RColorBrewer)
 Dash {data-icon="fa-globe"}
 ===================================== 
 
-Row {data-height=300}
+Row {data-height=250}
 -----------------------------------------------------------------------
 
 ```{r}
@@ -121,7 +121,7 @@ valueBox(perc_change,
 
 
 
-Row {data-height=300}
+Row {data-height=250}
 -----------------------------------------------------------------------
 
 ###
@@ -158,7 +158,7 @@ valueBox(perc_change,
          href="#personenzähler")
 ```
 
-Row {data-height=300}
+Row {data-height=250}
 -----------------------------------------------------------------------
 
 ###
@@ -188,7 +188,7 @@ valueBox(perc_change,
 Primo {data-orientation=columns}
 ===================================== 
 
-Column {data-width=400, data-height=400}
+Column {data-width=400, data-height=500}
 -----------------------------------------------------------------------
 
 ### Primo: Anzahl Suchen von 2018 bis 2020
@@ -398,19 +398,32 @@ ggplotly(p1)
 E-Books {data-orientation=columns}
 ===================================== 
 
-Column {data-width=400, data-height=400}
+Column {data-width=400, data-height=500}
 -----------------------------------------------------------------------
 
-### Springer E-Books Unique Title Requests (TR_B1) 2019 und 2020
-
-
 ```{r}
-Springer_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Springer/Springer_counter5_tr_b1_2019-01-2020-12.csv", header = T, skip = 13, sep = ",")
+Elsevier_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Elsevier/Elsevier_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
 ```
 
+```{r}
+Springer_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Springer/Springer_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
+```
 
 ```{r}
-Springer <- Springer_2019_20 %>%
+Elsevier <- Elsevier_2019_20_Books %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Title_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(publisher = "Elsevier") %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+```{r}
+Springer <- Springer_2019_20_Books %>%
   group_by(Metric_Type) %>%
   summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
   filter(Metric_Type == "Unique_Title_Requests") %>%
@@ -421,6 +434,36 @@ Springer <- Springer_2019_20 %>%
   mutate(year = as.factor(year(date)))
 ```
 
+### **Elsevier E-Books Unique Title Requests (TR_B1) 2019 und 2020**
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Elsevier, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Title Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+
+Column {data-width=400, data-height=500}
+-----------------------------------------------------------------------
+
+### **Springer E-Books Unique Title Requests (TR_B1) 2019 und 2020**
 
 ```{r}
 pal <- got(2, option = "Jon_Snow", direction = 1)
@@ -434,7 +477,7 @@ p1 <-
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
-  ylim(0, NA) +
+  # ylim(0, NA) +
   labs(
     title = "",
     y = "Unique Title Requests",
@@ -460,10 +503,10 @@ Journals
 ===================================== 
 
 
-Row {.tabset}
+Row {data-height=600, .tabset}
 -----------------------------------------------------------------------
 
-### Journals Unique Item Requests (TR_J1) 2020 im Vergleich zum Vorjahr in Prozent
+### **Unique Item Requests (TR_J1) 2020 im Vergleich zum Vorjahr in Prozent**
 
 
 ```{r}
@@ -475,7 +518,15 @@ LWW_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/LWW/LWW_2019_20
 ```
 
 ```{r}
+LWW_2019_20_J3 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/LWW/LWW_2019_2020_TR_J3.csv", header = T, skip = 13, sep = ",")
+```
+
+```{r}
 Highwire_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/Highwire/Highwire_2019_2020_TR_J1.csv", header = T, skip = 13, sep = ",")
+```
+
+```{r}
+Elsevier_2019_20 <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Journals/Elsevier/Elsevier_2019_2020_TR_J1.csv", header = T, skip = 13, sep = ",")
 ```
 
 ```{r}
@@ -486,19 +537,19 @@ Wiley_2019_20 <- read.table("T:/Statistik/ALMA_ART/Rohdaten_Journals/Wiley/Wiley
 NEJM_2019_20 <- read.table("T:/Statistik/ALMA_ART/Rohdaten_Journals/NEJM/NEJM_2019_2020_TR_J1.tsv", sep = '\t', header = TRUE, skip = 13)
 ```
 
+
 ```{r}
-Springer <- Springer_2019_20 %>%
+Elsevier <- Elsevier_2019_20 %>%
   group_by(Metric_Type) %>%
   summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
   filter(Metric_Type == "Unique_Item_Requests") %>%
   select(-1) %>%
   gather() %>%
-  mutate(publisher = "Springer") %>%
+  mutate(publisher = "Elsevier") %>%
   mutate(date = my(key)) %>%
   mutate(month = as.factor(month(date, label = T, abb = T))) %>%
   mutate(year = as.factor(year(date)))
 ```
-
 
 ```{r}
 LWW <- LWW_2019_20 %>%
@@ -515,18 +566,6 @@ LWW <- LWW_2019_20 %>%
   mutate(year = as.factor(year(date)))
 ```
 
-```{r}
-Wiley <- Wiley_2019_20 %>%
-  group_by(Metric_Type) %>%
-  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
-  filter(Metric_Type == "Unique_Item_Requests") %>%
-  select(-1) %>%
-  gather() %>%
-  mutate(publisher = "Wiley") %>%
-  mutate(date = my(key)) %>%
-  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
-  mutate(year = as.factor(year(date)))
-```
 
 ```{r}
 Highwire <- Highwire_2019_20 %>%
@@ -557,9 +596,34 @@ NEJM <- NEJM_2019_20 %>%
   mutate(year = as.factor(year(date)))
 ```
 
+```{r}
+Springer <- Springer_2019_20 %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Item_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(publisher = "Springer") %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
 
 ```{r}
-Journals <- bind_rows(Springer, LWW, Wiley, Highwire, NEJM)
+Wiley <- Wiley_2019_20 %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Item_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(publisher = "Wiley") %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+```{r}
+Journals <- bind_rows(Elsevier, Highwire, LWW, NEJM, Springer, Wiley)
 ```
 
 
@@ -571,17 +635,31 @@ Journals_Perc <- Journals %>%
   mutate(percent_change = (value / (lag(value)) - 1)) %>%
   filter(year == 2020) %>%
   select(-1,-2)
+
+
+publisher_uniq <- unique(Journals$publisher)
+
+```
+
+```{r eval=FALSE}
+Journals_Perc %>%
+  group_by(year) %>%
+  summarise(mean = mean(percent_change))
 ```
 
 
 ```{r}
-pal <- got(5, option = "Jon_Snow", direction = 1)
+pal <- got(length(publisher_uniq), option = "Jon_Snow", direction = 1)
+
 
 p1 <-
-  ggplot(Journals_Perc, aes(x = month, y = percent_change, color = publisher)) +
+  ggplot(Journals_Perc,
+         aes(x = month, y = percent_change, color = publisher)) +
   geom_point(size = 2) +
   geom_line(aes(x = month, y = percent_change, group = publisher), size = 1) +
-  geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.8) +
+  geom_hline(yintercept = 0,
+             linetype = "dashed",
+             alpha = 0.8) +
   theme(axis.text.x = element_text(angle = 90)) +
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
@@ -600,12 +678,12 @@ ggplotly(p1)
 
 
 
-### Journals Unique Item Requests (TR_J1) 2019 und 2020
+### **Unique Item Requests (TR_J1) 2019 und 2020**
 
 
 
 ```{r}
-pal <- got(5, option = "Jon_Snow", direction = 1)
+pal <- got(length(publisher_uniq), option = "Jon_Snow", direction = 1)
 
 p1 <-
   ggplot(Journals, aes(x = month, y = value, color = publisher)) +
@@ -629,7 +707,7 @@ ggplotly(p1)
 ```
 
 
-### Definition Unique Item Requests (TR_J1)
+### **Definition Unique Item Requests (TR_J1)**
 
 
 Unique_Item_Requests: Es wird nur ein Zugriff gezählt, wenn beim Aufruf eines Artikels automatisch die HTML-Version geöffnet und anschließend das PDF des Artikels heruntergeladen wird.
@@ -641,7 +719,116 @@ Unique_Item_Requests: Es wird nur ein Zugriff gezählt, wenn beim Aufruf eines A
 Row
 -----------------------------------------------------------------------
 
-### Springer Journals Unique Item Requests (TR_J1) 2019 und 2020
+### **Elsevier Journals Unique Item Requests (TR_J1) 2019 und 2020**
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Elsevier, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+### **HighWire Journals Unique Item Requests (TR_J1) 2019 und 2020**
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Highwire, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+Row
+-----------------------------------------------------------------------
+
+### **LWW Journals Unique Item Requests (TR_J1) 2019 und 2020**
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(LWW, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+
+
+### **NEJM Journals Unique Item Requests (TR_J1) 2019 und 2020**
+
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(NEJM, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Item Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+Row
+-----------------------------------------------------------------------
+
+### **Springer Journals Unique Item Requests (TR_J1) 2019 und 2020**
 
 
 ```{r}
@@ -656,7 +843,7 @@ p1 <-
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
-  ylim(0, NA) +
+  # ylim(0, NA) +
   labs(
     title = "",
     y = "Unique Item Requests",
@@ -668,13 +855,15 @@ ggplotly(p1)
 ```
 
 
-### LWW Journals Unique Item Requests (TR_J1) 2019 und 2020
+
+### **Wiley Journals Unique Item Requests (TR_J1) 2019 und 2020**
+
 
 ```{r}
 pal <- got(2, option = "Jon_Snow", direction = 1)
 
 p1 <-
-  ggplot(LWW, aes(x = month, y = value, color = year)) +
+  ggplot(Wiley, aes(x = month, y = value, color = year)) +
   geom_point(size = 2) +
   geom_line(aes(x = month, y = value, group = year), size = 1) +
   theme(axis.text.x = element_text(angle = 90)) +
@@ -682,7 +871,7 @@ p1 <-
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_color_manual(values = pal) +
-  ylim(0, NA) +
+  # ylim(0, NA) +
   labs(
     title = "",
     y = "Unique Item Requests",
@@ -692,7 +881,6 @@ p1 <-
 
 ggplotly(p1)
 ```
-
 
 
 ```{r eval=FALSE}

@@ -13,20 +13,36 @@ editor_options:
 
 <style>                     
 .navbar {
-  background-color:#36AFAE  ;
-  border-color:#36AFAE  ;
+  background-color:#777B7C  ;
+  border-color:#777B7C  ;
 }
 .navbar-brand {
 color:white!important;
 }
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+    background-color: #5EB7B6;
+    color: white;
+}
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+  color: white;
+  background-color: #5EB7B6;
+}
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+  background-color: #5EB7B6;
+}
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+  border-color: #5EB7B6;
+}
 </style> 
 
 
-```{r eval = FALSE}
-# change color of navbar
 
-
-```
  
 
 ```{r setup, include=FALSE}
@@ -150,7 +166,7 @@ spam <- "-59 %"
 valueBox(spam,
          caption = "Personenzähler CVK </br>(im Vergleich zum Vorjahr 2019)",
          icon = "fa-users",
-         color = pal[11], 
+         color = pal[12], 
          href="#personenzähler")
 ```
 

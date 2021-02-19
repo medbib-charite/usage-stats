@@ -1,5 +1,7 @@
 ---
 title: "Nutzungsstatistiken 2020"
+# author: "Jan Taubitz"
+# contact: "jan.taubitz@charite.de"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -22,22 +24,22 @@ color:white!important;
 
 .navbar-inverse .navbar-nav > li > a:hover,
 .navbar-inverse .navbar-nav > li > a:focus {
-    background-color: #5EB7B6;
+    background-color: #36AFAE;
     color: white;
 }
 .navbar-inverse .navbar-nav > .active > a,
 .navbar-inverse .navbar-nav > .active > a:hover,
 .navbar-inverse .navbar-nav > .active > a:focus {
   color: white;
-  background-color: #5EB7B6;
+  background-color: #36AFAE;
 }
 .navbar-inverse .navbar-toggle:hover,
 .navbar-inverse .navbar-toggle:focus {
-  background-color: #5EB7B6;
+  background-color: #36AFAE;
 }
 .navbar-inverse .navbar-collapse,
 .navbar-inverse .navbar-form {
-  border-color: #5EB7B6;
+  border-color: #36AFAE;
 }
 </style> 
 
@@ -703,6 +705,7 @@ Ausleihen <- read_excel(
 ```{r}
 Ausleihen <- Ausleihen %>%
   mutate(Ausl_Verl = Ausleihen + Verlängerungen) %>%
+  mutate(Bibliothek = factor(Bibliothek, levels = c("CVK", "CCM", "ZMK"))) %>%
   mutate(Monat = as.factor(month(Monat, label = T, abb = T)))
 ```
 

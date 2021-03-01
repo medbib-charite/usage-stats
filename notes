@@ -1,0 +1,27 @@
+Change Navbar Flexdashboard
+
+https://rmarkdown.rstudio.com/flexdashboard/using.html#appearance
+https://stackoverflow.com/questions/49803014/modify-flexdashboard-css-in-r
+https://stackoverflow.com/questions/58064754/change-color-of-activated-page-in-flexdashboard
+
+Change size of html
+in YMAL
+self_contained: false
+https://stackoverflow.com/questions/54643852/how-to-reduce-the-size-of-flexdashboards
+
+General Ressources on flexdahboard
+# https://towardsdatascience.com/building-an-hr-dashboard-in-r-using-flexdashboard-76d14ed3f32
+# https://rmarkdown.rstudio.com/flexdashboard/using.html
+# Icons:
+# https://fontawesome.com/
+
+Counter Definition
+# http://www.bib-bvb.de/documents/11183/10148261/COUNTER-5_Zusammenstellung_KER_2020-01.pdf/bfaa960a-30ed-4429-9a99-1328a0598c44
+
+Language Settings
+# https://stackoverflow.com/questions/13575180/how-to-change-language-settings-in-r
+#Sys.setenv(LANG = "en")
+# https://stackoverflow.com/questions/39340185/how-to-set-the-default-language-of-date-in-r
+#Sys.setlocale("LC_TIME", "German")
+
+keep

@@ -409,6 +409,7 @@ Elsevier_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Elsev
 Springer_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Springer/Springer_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
 ```
 
+
 ```{r}
 Elsevier <- Elsevier_2019_20_Books %>%
   group_by(Metric_Type) %>%

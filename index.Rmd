@@ -4,7 +4,7 @@ title: "Nutzungsstatistiken 2020"
 # contact: "jan.taubitz@charite.de"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
+    orientation: columns
     vertical_layout: scroll
     source_code: embed
 editor_options: 
@@ -44,6 +44,10 @@ color:white!important;
 </style> 
 
 
+
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
@@ -66,15 +70,60 @@ library(RColorBrewer)
 Dash {data-icon="fa-globe"}
 ===================================== 
 
-Row {data-height=250}
------------------------------------------------------------------------
-
 ```{r}
 # color pallettes for valueBoxes
 pal <- got(20, option = "Jon_Snow", direction = 1)
 pal <- str_sub(pal, end=-3)
 ```
 
+
+Column
+-----------------------------------------------------------------------
+
+
+###
+
+```{r}
+valueBox(value = "",
+         caption = "Elektr. Ressourcen",
+         color = "#777B7C")
+```
+
+
+###
+
+```{r}
+perc_change <- "+24 %"
+valueBox(perc_change,
+         caption = "Downloads aus E-Journals </br>(im Vergleich zum Vorjahr 2019)",
+         icon = "fa-file",
+         color = pal[18],
+         href = "#journals")
+```
+
+
+###
+
+```{r}
+perc_change <- "+31 %"
+valueBox(perc_change,
+         caption = "Downloads aus E-Books </br>(im Vergleich zum Vorjahr 2019)",
+         icon = "fa-book",
+         color = pal[20],
+         href = "#e-books")
+```
+
+
+Column
+-----------------------------------------------------------------------
+
+###
+
+```{r}
+valueBox(value = "",
+         caption = "Primo und Website",
+         color = "#777B7C")
+```
 
 ###
 
@@ -88,19 +137,28 @@ valueBox(perc_change,
 ```
 
 
+###
+
+```{r}
+perc_change <- "+28 %"
+valueBox(perc_change,
+         caption = "Besuche der Website </br>(im Vergleich zum Vorjahr 2020)",
+         icon = "fa-user-check",
+         color = pal[19],
+         href = "#website")
+```
+
+
+Column
+-----------------------------------------------------------------------
 
 ###
 
 ```{r}
-perc_change <- "+31 %"
-valueBox(perc_change,
-         caption = "Downloads aus E-Books von Springer </br>(im Vergleich zum Vorjahr 2019)",
-         icon = "fa-book",
-         color = pal[20],
-         href = "#e-books")
+valueBox(value = "",
+         caption = "Vor Ort",
+         color = "#777B7C")
 ```
-
-
 
 ###
 
@@ -113,40 +171,6 @@ valueBox(perc_change,
          href="#ausleihen")
 ```
 
-```{r eval=FALSE}
-### 
-#Die Zahl bezieht sich auf die prozentuale Veränderung zum Vorjahr 2019.
-```
-
-
-
-
-Row {data-height=250}
------------------------------------------------------------------------
-
-###
-
-```{r}
-perc_change <- "+28 %"
-valueBox(perc_change,
-         caption = "Besuche der Website </br>(im Vergleich zum Vorjahr 2020)",
-         icon = "fa-user-check",
-         color = pal[19],
-         href = "#website")
-```
-
-###
-
-```{r}
-perc_change <- "+24 %"
-valueBox(perc_change,
-         caption = "Downloads aus E-Journals von Springer </br>(im Vergleich zum Vorjahr 2019)",
-         icon = "fa-file",
-         color = pal[18],
-         href = "#journals")
-```
-
-
 ###
 
 ```{r}
@@ -158,349 +182,105 @@ valueBox(perc_change,
          href="#personenzähler")
 ```
 
-Row {data-height=250}
------------------------------------------------------------------------
+
+```{r, eval=FALSE}
+### 
+#Die Zahl bezieht sich auf die prozentuale Veränderung zum Vorjahr 2019.
+
 
 ###
 
-```{r}
-perc_change <- "+9 %"
-valueBox(perc_change,
-         caption = "Downloads aus E-Journals von LWW </br>(im Vergleich zum Vorjahr 2019)",
-         icon = "fa-file",
-         color = pal[15],
-         href = "#journals")
-```
+# Elektronische Ressourcen
 
 ###
 
-```{r}
-
-```
+# Bibliotheksportal und Website
 
 ###
 
-```{r}
-
+# Bibliothek als physischer Ort
 ```
 
 
-Primo {data-orientation=columns}
-===================================== 
-
-Column {data-width=400, data-height=500}
------------------------------------------------------------------------
-
-### Primo: Anzahl Suchen von 2018 bis 2020
-
-```{r}
-Primo_Stat_Auswertungen <-
-  read_excel(
-    "T:/Statistik/ALMA_ART/Primo_Stat_Auswertungen.xlsx",
-    sheet = "R_1",
-    col_types = c("date",
-                  "text", "numeric")
-  )
+```{r, eval=FALSE}
+Elsevier_TM <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Counter_Master/Elsevier/Elsevier_Title_Master_Report.csv", header = T, skip = 12, sep = ",")
 ```
 
-```{r}
-Primo <- Primo_Stat_Auswertungen %>%
-  mutate(Year = year(Date)) %>%
-  group_by(Year, Action) %>%
-  summarise(Value = sum(Value))
-```
-
-```{r}
-Primo_3 <- Primo %>%
-  summarise(Search_Total = sum(Value)) %>%
-  mutate(Percent_Change = (Search_Total / (lag(Search_Total)) - 1))
-```
+```{r, eval=FALSE}
+unique(Elsevier_TM$Access_Method)
+unique(Elsevier_TM$Publisher)
 
 
-```{r}
-pal <- got(2, option = "Jon_Snow", direction = 1)
+sapply(Elsevier_TM, function(x) length(unique(x)))
 
-p1 <- ggplot(Primo, aes(x = Year, y = Value)) +
-  geom_col(aes(fill = Action), position = "dodge") +
-  theme_classic() +
-  labs(
-    title = "",
-    subtitle = "",
-    fill = "Suchen",
-    y = "",
-    x = ""
-  ) +
-  scale_fill_manual(values = pal) +
-  theme(legend.position = "bottom") 
-
-ggplotly(p1) %>%
-  layout(legend = list(orientation = "h", y = -0.1))
-```
+sort(table(Elsevier_TM$Metric_Type), decreasing = TRUE)
 
 
-```{r eval=FALSE}
-#Column {data-width=200, data-height=200}  
-#-----------------------------------------------------------------------
-
-### Primo B
-
-Primo_2 <- Primo %>%
-  spread(key = Year, value = Value) %>%
-  adorn_totals("row")
-
-gt(Primo_3) %>%
-  tab_header(title = md("Suchen in Primo"))
-```
+elsevier_tm_test <- Elsevier_TM %>%
+  filter(Metric_Type == "Unique_Item_Requests" | Metric_Type == "Unique_Title_Requests" | Metric_Type == "No_License") %>%
+  mutate(Total_2019 = rowSums(.[18:29])) %>%
+  mutate(Total_2020 = rowSums(.[30:41])) %>%
+  select(-c(3, 5, 15, 17:41))
 
 
+elsevier_tm_test_2 <- Elsevier_TM %>%
+  filter(Metric_Type == "Unique_Item_Requests" | Metric_Type == "Unique_Title_Requests" | Metric_Type == "No_License") %>%
+  mutate(Total_2019 = rowSums(.[18:29])) %>%
+  mutate(Total_2020 = rowSums(.[30:41])) %>%
+  select(-c(3, 5, 15, 17:41)) %>%
+  group_by(.[1:8], Data_Type, Section_Type, Access_Type, Metric_Type) %>%
+  summarize_at(vars(Total_2019:Total_2020), sum)
+  
+elsevier_tm_test_3 <- elsevier_tm_test_2 %>%
+  filter(Section_Type != "Chapter") %>%
+  group_by(Data_Type, Access_Type, Metric_Type) %>%
+  summarize_at(vars(Total_2019:Total_2020), sum)
+
+elsevier_tm_test_3_long <- elsevier_tm_test_3 %>%
+  pivot_longer(
+   cols = starts_with("Total"),
+   names_to = "Total",
+   values_drop_na = TRUE)
+
+elsevier_tm_test_3_long <- elsevier_tm_test_3_long %>%
+  filter(Data_Type == "Journal")
+
+elsevier_tm_test_3_long$Access_Type[elsevier_tm_test_3_long$Metric_Type == "No_License" ] <- "No_License"
 
 
-Website {data-orientation=columns}
-===================================== 
-
-Column
------------------------------------------------------------------------
-
-### Website: Besuche und Seitenansichten 2018 bis 2020
-
-```{r}
-Website_Besuche <- read_excel(
-  "T:/Statistik/ALMA_ART/Website.xlsx",
-  sheet = "Besuche",
-  col_types = c("numeric",
-                "text", "numeric")
-)
 ```
 
 ```{r}
-Website_Besuche_2 <- Website_Besuche %>%
-  group_by(Action) %>%
-  #  filter(Action == "Besuche") %>%
-  mutate(Percent_Change = (Value / (lag(Value)) - 1))
-```
+p <- ggplot(elsevier_tm_test_3_long, aes(x = value, y = Data_Type, color = Access_Type)) +
+  geom_point(size = 4) +
+  theme_minimal()
 
-
-```{r}
-pal <- got(2, option = "Jon_Snow", direction = 1)
-
-p1 <- ggplot(Website_Besuche, aes(x = Date, y = Value)) +
-  geom_col(aes(fill = Action), position = "dodge") +
-  theme_classic() +
-  scale_fill_manual(values = pal) +
-  labs(title = "",
-       fill = "",
-       y = "",
-       x = "") 
-
-ggplotly(p1)
-```
-
-### Website: Verwendung Betriebssysteme 2020
-
-```{r}
-Website_OS <- read_excel(
-  "T:/Statistik/ALMA_ART/Website.xlsx",
-  sheet = "Desktop",
-  col_types = c("text", "text", "numeric")
-)
-```
-
-
-```{r}
-pal <- got(3, option = "Jon_Snow", direction = -1)
-
-p1 <- Website_OS %>%
-  filter(date == "2020") %>%
-  plot_ly(marker = list(colors = pal)) %>%
-  add_pie(labels = Website_OS$action,
-          values = Website_OS$value,
-          hole = 0.6) %>%
-  layout(title = "")
-p1
-```
-
-
-
-Column
------------------------------------------------------------------------
-
-
-### Website: Besuche 2018 bis 2020
-
-```{r}
-Website_Users <- read_excel(
-  "T:/Statistik/ALMA_ART/Website.xlsx",
-  sheet = "Users",
-  col_types = c("date", "numeric", "numeric")
-)
-
-pal <- got(3, option = "Jon_Snow", direction = 1)
+ggplotly(p)
 ```
 
 ```{r}
-Website_Users_2 <- Website_Users %>%
-  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
-  mutate(year = as.factor(year(date)))
-
-p2 <-
-  ggplot(Website_Users_2, aes(x = month, y = visits, color = year)) +
-  geom_point(size = 2) +
-  geom_line(aes(x = month, y = visits, group = year), size = 1) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
-  labs(
-    title = "",
-    y = "Besuche",
-    x = "",
-    color = ""
-  )
-
-ggplotly(p2)
+p <- ggplot(elsevier_tm_test_3_long) +
+  geom_point(aes(x = value, y = Data_Type, color = Access_Type, shape = Total$"Total_2019")) +
+  theme_minimal()
+  
+ggplotly(p)
+  
+  
+  
+  
+  geom_segment(aes(x = value,
+  y = ,
+  xend = value,
+  yend = ),
+ size = 1) +
+  
+# https://www.r-bloggers.com/2013/01/using-line-segments-to-compare-values-in-r/
 
 ```
 
-### Website: Unique Users 2018 bis 2020
 
 
-
-
-```{r}
-Website_Users_2 <- Website_Users %>%
-  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
-  mutate(year = as.factor(year(date)))
-
-p1 <-
-  ggplot(Website_Users_2, aes(x = month, y = unique_users, color = year)) +
-  geom_point(size = 2) +
-  geom_line(aes(x = month, y = unique_users, group = year), size = 1) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
-  labs(
-    title = "",
-    y = "Unique Users",
-    x = "",
-    color = ""
-  )
-
-ggplotly(p1)
-```
-
-
-
-
-
-E-Books {data-orientation=columns}
-===================================== 
-
-Column {data-width=400, data-height=500}
------------------------------------------------------------------------
-
-```{r}
-Elsevier_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Elsevier/Elsevier_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
-```
-
-```{r}
-Springer_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Springer/Springer_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
-```
-
-
-```{r}
-Elsevier <- Elsevier_2019_20_Books %>%
-  group_by(Metric_Type) %>%
-  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
-  filter(Metric_Type == "Unique_Title_Requests") %>%
-  select(-1) %>%
-  gather() %>%
-  mutate(publisher = "Elsevier") %>%
-  mutate(date = my(key)) %>%
-  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
-  mutate(year = as.factor(year(date)))
-```
-
-```{r}
-Springer <- Springer_2019_20_Books %>%
-  group_by(Metric_Type) %>%
-  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
-  filter(Metric_Type == "Unique_Title_Requests") %>%
-  select(-1) %>%
-  gather() %>%
-  mutate(date = my(key)) %>%
-  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
-  mutate(year = as.factor(year(date)))
-```
-
-### **Elsevier E-Books Unique Title Requests (TR_B1) 2019 und 2020**
-
-```{r}
-pal <- got(2, option = "Jon_Snow", direction = 1)
-
-p1 <-
-  ggplot(Elsevier, aes(x = month, y = value, color = year)) +
-  geom_point(size = 2) +
-  geom_line(aes(x = month, y = value, group = year), size = 1) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
-  # ylim(0, NA) +
-  labs(
-    title = "",
-    y = "Unique Title Requests",
-    x = "",
-    color = ""
-  )
-
-ggplotly(p1)
-```
-
-
-Column {data-width=400, data-height=500}
------------------------------------------------------------------------
-
-### **Springer E-Books Unique Title Requests (TR_B1) 2019 und 2020**
-
-```{r}
-pal <- got(2, option = "Jon_Snow", direction = 1)
-
-p1 <-
-  ggplot(Springer, aes(x = month, y = value, color = year)) +
-  geom_point(size = 2) +
-  geom_line(aes(x = month, y = value, group = year), size = 1) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
-  # ylim(0, NA) +
-  labs(
-    title = "",
-    y = "Unique Title Requests",
-    x = "",
-    color = ""
-  )
-
-ggplotly(p1)
-```
-
-```{r eval=FALSE}
-Springer %>%
-  group_by(year) %>%
-  summarise(value = sum(value)) %>%
-  mutate(percent_change = (value / (lag(value)) - 1))
-```
-
-
-
-
-
-Journals
+Journals {data-orientation=rows}
 ===================================== 
 
 
@@ -634,6 +414,7 @@ Journals_Perc <- Journals %>%
   group_by(publisher, month) %>%
   arrange(month, year) %>%
   mutate(percent_change = (value / (lag(value)) - 1)) %>%
+  mutate(percent_change = percent_change * 100) %>%
   filter(year == 2020) %>%
   select(-1,-2)
 
@@ -905,6 +686,319 @@ Journals %>%
   summarise(value = sum(value)) %>%
   mutate(percent_change = (value / (lag(value)) - 1))
 ```
+
+
+
+E-Books {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=500}
+-----------------------------------------------------------------------
+
+```{r}
+Elsevier_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Elsevier/Elsevier_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
+```
+
+```{r}
+Springer_2019_20_Books <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_E_Books/Springer/Springer_2019_2020_TR_B1.csv", header = T, skip = 13, sep = ",")
+```
+
+
+```{r}
+Elsevier <- Elsevier_2019_20_Books %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Title_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(publisher = "Elsevier") %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+```{r}
+Springer <- Springer_2019_20_Books %>%
+  group_by(Metric_Type) %>%
+  summarise_at(vars(Jan.2019:Dec.2020), sum) %>%
+  filter(Metric_Type == "Unique_Title_Requests") %>%
+  select(-1) %>%
+  gather() %>%
+  mutate(date = my(key)) %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+```
+
+### **Elsevier E-Books Unique Title Requests (TR_B1) 2019 und 2020**
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Elsevier, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Title Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+
+Column {data-width=400, data-height=500}
+-----------------------------------------------------------------------
+
+### **Springer E-Books Unique Title Requests (TR_B1) 2019 und 2020**
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <-
+  ggplot(Springer, aes(x = month, y = value, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = value, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  # ylim(0, NA) +
+  labs(
+    title = "",
+    y = "Unique Title Requests",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
+```{r eval=FALSE}
+Springer %>%
+  group_by(year) %>%
+  summarise(value = sum(value)) %>%
+  mutate(percent_change = (value / (lag(value)) - 1))
+```
+
+
+
+
+Primo {data-orientation=columns}
+===================================== 
+
+Column {data-width=400, data-height=500}
+-----------------------------------------------------------------------
+
+### Primo: Anzahl Suchen von 2018 bis 2020
+
+```{r}
+Primo_Stat_Auswertungen <-
+  read_excel(
+    "T:/Statistik/ALMA_ART/Primo_Stat_Auswertungen.xlsx",
+    sheet = "R_1",
+    col_types = c("date",
+                  "text", "numeric")
+  )
+```
+
+```{r}
+Primo <- Primo_Stat_Auswertungen %>%
+  mutate(Year = year(Date)) %>%
+  group_by(Year, Action) %>%
+  summarise(Value = sum(Value))
+```
+
+```{r}
+Primo_3 <- Primo %>%
+  summarise(Search_Total = sum(Value)) %>%
+  mutate(Percent_Change = (Search_Total / (lag(Search_Total)) - 1))
+```
+
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <- ggplot(Primo, aes(x = Year, y = Value)) +
+  geom_col(aes(fill = Action), position = "dodge") +
+  theme_classic() +
+  labs(
+    title = "",
+    subtitle = "",
+    fill = "Suchen",
+    y = "",
+    x = ""
+  ) +
+  scale_fill_manual(values = pal) +
+  theme(legend.position = "bottom") 
+
+ggplotly(p1) %>%
+  layout(legend = list(orientation = "h", y = -0.1))
+```
+
+
+```{r eval=FALSE}
+#Column {data-width=200, data-height=200}  
+#-----------------------------------------------------------------------
+
+### Primo B
+
+Primo_2 <- Primo %>%
+  spread(key = Year, value = Value) %>%
+  adorn_totals("row")
+
+gt(Primo_3) %>%
+  tab_header(title = md("Suchen in Primo"))
+```
+
+
+
+
+Website {data-orientation=columns}
+===================================== 
+
+Column
+-----------------------------------------------------------------------
+
+### Website: Besuche und Seitenansichten 2018 bis 2020
+
+```{r}
+Website_Besuche <- read_excel(
+  "T:/Statistik/ALMA_ART/Website.xlsx",
+  sheet = "Besuche",
+  col_types = c("numeric",
+                "text", "numeric")
+)
+```
+
+```{r}
+Website_Besuche_2 <- Website_Besuche %>%
+  group_by(Action) %>%
+  #  filter(Action == "Besuche") %>%
+  mutate(Percent_Change = (Value / (lag(Value)) - 1))
+```
+
+
+```{r}
+pal <- got(2, option = "Jon_Snow", direction = 1)
+
+p1 <- ggplot(Website_Besuche, aes(x = Date, y = Value)) +
+  geom_col(aes(fill = Action), position = "dodge") +
+  theme_classic() +
+  scale_fill_manual(values = pal) +
+  labs(title = "",
+       fill = "",
+       y = "",
+       x = "") 
+
+ggplotly(p1)
+```
+
+### Website: Verwendung Betriebssysteme 2020
+
+```{r}
+Website_OS <- read_excel(
+  "T:/Statistik/ALMA_ART/Website.xlsx",
+  sheet = "Desktop",
+  col_types = c("text", "text", "numeric")
+)
+```
+
+
+```{r}
+pal <- got(3, option = "Jon_Snow", direction = -1)
+
+p1 <- Website_OS %>%
+  filter(date == "2020") %>%
+  plot_ly(marker = list(colors = pal)) %>%
+  add_pie(labels = Website_OS$action,
+          values = Website_OS$value,
+          hole = 0.6) %>%
+  layout(title = "")
+p1
+```
+
+
+
+Column
+-----------------------------------------------------------------------
+
+
+### Website: Besuche 2018 bis 2020
+
+```{r}
+Website_Users <- read_excel(
+  "T:/Statistik/ALMA_ART/Website.xlsx",
+  sheet = "Users",
+  col_types = c("date", "numeric", "numeric")
+)
+
+pal <- got(3, option = "Jon_Snow", direction = 1)
+```
+
+```{r}
+Website_Users_2 <- Website_Users %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+
+p2 <-
+  ggplot(Website_Users_2, aes(x = month, y = visits, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = visits, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  labs(
+    title = "",
+    y = "Besuche",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p2)
+
+```
+
+### Website: Unique Users 2018 bis 2020
+
+
+
+
+```{r}
+Website_Users_2 <- Website_Users %>%
+  mutate(month = as.factor(month(date, label = T, abb = T))) %>%
+  mutate(year = as.factor(year(date)))
+
+p1 <-
+  ggplot(Website_Users_2, aes(x = month, y = unique_users, color = year)) +
+  geom_point(size = 2) +
+  geom_line(aes(x = month, y = unique_users, group = year), size = 1) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_manual(values = pal) +
+  labs(
+    title = "",
+    y = "Unique Users",
+    x = "",
+    color = ""
+  )
+
+ggplotly(p1)
+```
+
 
 
 

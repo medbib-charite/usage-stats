@@ -149,38 +149,6 @@ valueBox(perc_change,
 ```
 
 
-Column
------------------------------------------------------------------------
-
-###
-
-```{r}
-valueBox(value = "",
-         caption = "Vor Ort",
-         color = "#777B7C")
-```
-
-###
-
-```{r}
-perc_change <- "-48 %"
-valueBox(perc_change,
-         caption = "Ausleihen von Büchern </br>(im Vergleich zum Vorjahr 2019)",
-         icon = "fa-book",
-         color = pal[12], 
-         href="#ausleihen")
-```
-
-###
-
-```{r}
-perc_change <- "-59 %"
-valueBox(perc_change,
-         caption = "Personenzähler CVK </br>(im Vergleich zum Vorjahr 2019)",
-         icon = "fa-users",
-         color = pal[12], 
-         href="#personenzähler")
-```
 
 
 ```{r, eval=FALSE}
@@ -250,7 +218,7 @@ elsevier_tm_test_3_long$Access_Type[elsevier_tm_test_3_long$Metric_Type == "No_L
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 p <- ggplot(elsevier_tm_test_3_long, aes(x = value, y = Data_Type, color = Access_Type)) +
   geom_point(size = 4) +
   theme_minimal()
@@ -258,22 +226,21 @@ p <- ggplot(elsevier_tm_test_3_long, aes(x = value, y = Data_Type, color = Acces
 ggplotly(p)
 ```
 
-```{r}
-p <- ggplot(elsevier_tm_test_3_long) +
-  geom_point(aes(x = value, y = Data_Type, color = Access_Type, shape = Total$"Total_2019")) +
+```{r, eval=FALSE}
+p <- ggplot(elsevier_tm_test_3_long,aes(x = value, y = Data_Type, group = Access_Type, color = Access_Type)) +
+  geom_path(size = 1, lineend = "butt",
+            arrow = arrow(type = "open")) +
+  geom_point() +
   theme_minimal()
   
 ggplotly(p)
+
+# , alpha = Total
+  
+# https://github.com/ropensci/plotly/issues/469  
   
   
-  
-  
-  geom_segment(aes(x = value,
-  y = ,
-  xend = value,
-  yend = ),
- size = 1) +
-  
+ 
 # https://www.r-bloggers.com/2013/01/using-line-segments-to-compare-values-in-r/
 
 ```
@@ -489,7 +456,7 @@ ggplotly(p1)
 ```
 
 
-### **Definition Unique Item Requests (TR_J1)**
+### **Readme Definition Unique Item Requests (TR_J1)**
 
 
 Unique_Item_Requests: Es wird nur ein Zugriff gezählt, wenn beim Aufruf eines Artikels automatisch die HTML-Version geöffnet und anschließend das PDF des Artikels heruntergeladen wird.
@@ -1000,154 +967,3 @@ ggplotly(p1)
 ```
 
 
-
-
-Ausleihen {data-orientation=columns}
-===================================== 
-
-Column {data-width=400, data-height=400}
------------------------------------------------------------------------
-
-### Ausleihen (inkl. Verl.) nach Standorten 2019 und 2020
-
-```{r eval=FALSE}
-Ausleihen <- read_excel(
-  "T:/Statistik/ALMA_ART/Ausleihen.xlsx",
-  sheet = "Ausleihen_R",
-  col_types = c("text",
-                "numeric", "numeric", "numeric",
-                "numeric"),
-  na = "NA"
-)
-```
-
-```{r eval=FALSE}
-pal <- got(12, option = "Jon_Snow", direction = -1)
-
-p1 <-
-  ggplot(Ausleihen, aes(x = Jahr, y = Ausleihen_u_Verl)) +
-  geom_col(fill = pal[1]) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(
-    title = "Ausleihen (inkl. Verl.) alle Standorte 2007 bis 2020",
-    y = "Ausleihen",
-    x = "",
-    color = ""
-  )
-
-ggplotly(p1)
-```
-
-```{r eval=FALSE}
-Ausleihen %>%
-  mutate(Percent_Change = (Ausleihen_u_Verl / (lag(Ausleihen_u_Verl)) -
-                             1))
-```
-
-
-```{r}
-Ausleihen <- read_excel(
-  "T:/Statistik/ALMA_ART/Ausl_Verl.xlsx",
-  sheet = "Tabelle1",
-  col_types = c("text",
-                "text", "numeric", "numeric",
-                "numeric", "numeric"),
-  na = "NA"
-)
-```
-
-
-```{r}
-Ausleihen <- Ausleihen %>%
-  mutate(Ausl_Verl = Ausleihen + Verlängerungen) %>%
-  mutate(Bibliothek = factor(Bibliothek, levels = c("CVK", "CCM", "ZMK"))) %>%
-  mutate(Monat = as.factor(month(Monat, label = T, abb = T)))
-```
-
-
-```{r}
-pal <- got(3, option = "Jon_Snow", direction = -1)
-
-p1 <-
-  ggplot(Ausleihen, aes(x = Monat, y = Ausl_Verl, color = Bibliothek)) +
-  geom_point(size = 2) +
-  geom_line(aes(x = Monat, y = Ausl_Verl, group = Bibliothek), size = 1) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
-  ylim(0, NA) +
-  labs(
-    title = "",
-    y = "",
-    x = "",
-    color = ""
-  ) +
-  facet_wrap(~Jahr)
-
-ggplotly(p1)
-```
-
-
-```{r eval=FALSE}
-Ausleihen %>%
-  group_by(Jahr) %>%
-  summarise(Ausl_Verl = sum(Ausl_Verl)) %>%
-  mutate(Percent_Change = (Ausl_Verl / (lag(Ausl_Verl)) -
-                             1))
-```
-
-
-Personenzähler {data-orientation=columns}
-===================================== 
-
-Column {data-width=400, data-height=400}
------------------------------------------------------------------------
-
-### Personenzähler CVK 2018 bis 2020
-
-```{r}
-Lesesaal <- read_excel(
-  "T:/Statistik/ALMA_ART/Lesesaal.xlsx",
-  sheet = "Tabelle1",
-  col_types = c("date",
-                "numeric"),
-  na = "NA"
-)
-
-Lesesaal_2 <- Lesesaal %>%
-  mutate(month = as.factor(month(Date, label = T, abb = T))) %>%
-  mutate(year = as.factor(year(Date)))
-
-pal <- got(3, option = "Jon_Snow", direction = 1)
-
-p1 <-
-  ggplot(Lesesaal_2, aes(x = month, y = Value, color = year)) +
-  geom_point(size = 2) +
-  geom_line(aes(x = month, y = Value, group = year), size = 1) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
-  labs(
-    title = "",
-    y = "Personenzähler",
-    x = "",
-    color = ""
-  )
-
-ggplotly(p1)
-
-```
-
-```{r eval=FALSE}
-Lesesaal_2 %>%
-  group_by(year) %>%
-  summarise(Value = sum(Value)) %>%
-  mutate(percent_change = (Value / (lag(Value)) - 1))
-```

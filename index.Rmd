@@ -55,17 +55,15 @@ knitr::opts_chunk$set(echo = FALSE,
                       options(scipen = 999))
 
 library(flexdashboard)
-library(readxl)
-library(tidyverse)
-library(lubridate)
-library(gt)
-library(janitor)
-library(scales)
-#library(DT)
-library(plotly)
-library(gameofthrones)
-library(RColorBrewer)
+
+cat("\014") # Clear your console
+rm(list = ls()) # Clear your environment
+
+source("data.R") # Load data
 ```
+
+
+
 
 Dash {data-icon="fa-globe"}
 ===================================== 
@@ -170,53 +168,6 @@ valueBox(perc_change,
 ```
 
 
-```{r, eval=FALSE}
-Elsevier_TM <- read.csv("T:/Statistik/ALMA_ART/Rohdaten_Counter_Master/Elsevier/Elsevier_Title_Master_Report.csv", header = T, skip = 12, sep = ",")
-```
-
-```{r, eval=FALSE}
-unique(Elsevier_TM$Access_Method)
-unique(Elsevier_TM$Publisher)
-
-
-sapply(Elsevier_TM, function(x) length(unique(x)))
-
-sort(table(Elsevier_TM$Metric_Type), decreasing = TRUE)
-
-
-elsevier_tm_test <- Elsevier_TM %>%
-  filter(Metric_Type == "Unique_Item_Requests" | Metric_Type == "Unique_Title_Requests" | Metric_Type == "No_License") %>%
-  mutate(Total_2019 = rowSums(.[18:29])) %>%
-  mutate(Total_2020 = rowSums(.[30:41])) %>%
-  select(-c(3, 5, 15, 17:41))
-
-
-elsevier_tm_test_2 <- Elsevier_TM %>%
-  filter(Metric_Type == "Unique_Item_Requests" | Metric_Type == "Unique_Title_Requests" | Metric_Type == "No_License") %>%
-  mutate(Total_2019 = rowSums(.[18:29])) %>%
-  mutate(Total_2020 = rowSums(.[30:41])) %>%
-  select(-c(3, 5, 15, 17:41)) %>%
-  group_by(.[1:8], Data_Type, Section_Type, Access_Type, Metric_Type) %>%
-  summarize_at(vars(Total_2019:Total_2020), sum)
-  
-elsevier_tm_test_3 <- elsevier_tm_test_2 %>%
-  filter(Section_Type != "Chapter") %>%
-  group_by(Data_Type, Access_Type, Metric_Type) %>%
-  summarize_at(vars(Total_2019:Total_2020), sum)
-
-elsevier_tm_test_3_long <- elsevier_tm_test_3 %>%
-  pivot_longer(
-   cols = starts_with("Total"),
-   names_to = "Total",
-   values_drop_na = TRUE)
-
-elsevier_tm_test_3_long <- elsevier_tm_test_3_long %>%
-  filter(Data_Type == "Journal")
-
-elsevier_tm_test_3_long$Access_Type[elsevier_tm_test_3_long$Metric_Type == "No_License" ] <- "No_License"
-
-
-```
 
 ```{r, eval=FALSE}
 p <- ggplot(elsevier_tm_test_3_long, aes(x = value, y = Data_Type, color = Access_Type)) +
@@ -238,9 +189,7 @@ ggplotly(p)
 # , alpha = Total
   
 # https://github.com/ropensci/plotly/issues/469  
-  
-  
- 
+
 # https://www.r-bloggers.com/2013/01/using-line-segments-to-compare-values-in-r/
 
 ```
@@ -413,7 +362,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
@@ -442,7 +391,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   ylim(0, NA) +
   labs(
     title = "",
@@ -481,7 +430,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
@@ -506,7 +455,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+#  scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
@@ -534,7 +483,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
@@ -562,7 +511,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
@@ -591,7 +540,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
@@ -619,7 +568,7 @@ p1 <-
   #  scale_x_datetime(date_labels = "%b %Y", date_breaks = "2 month")+
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_color_manual(values = pal) +
+ # scale_color_manual(values = pal) +
   # ylim(0, NA) +
   labs(
     title = "",
